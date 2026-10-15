@@ -1,0 +1,25 @@
+# Unreal Engine generated output
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+.vs/
+.idea/
+.vscode/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.opendb
+*.user
+*.pdb
+*.obj
+*.log
+tmp/
+*.pdf
+
+*.slnx
+.vsconfig

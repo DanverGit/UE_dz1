@@ -1,0 +1,27 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.8",
+  "Category": "",
+  "Description": "",
+  "Modules": [
+    {
+      "Name": "dz1",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "dz1Editor",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "ModelingToolsEditorMode",
+      "Enabled": true,
+      "TargetAllowList": [
+        "Editor"
+      ]
+    }
+  ]
+}
