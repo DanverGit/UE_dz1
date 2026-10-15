@@ -36,6 +36,10 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "Misc/ScopeExit.h"
+#include "FileHelpers.h"
+#include "GameFramework/WorldSettings.h"
+#include "GameFramework/GameModeBase.h"
+#include "EngineUtils.h"
 
 UPrepareHomeworkCommandlet::UPrepareHomeworkCommandlet()
 {
@@ -105,6 +109,15 @@ int32 UPrepareHomeworkCommandlet::Main(const FString& Params)
     UBlueprint* Character = LoadObject<UBlueprint>(nullptr, TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter.BP_ThirdPersonCharacter"));
     UAnimBlueprint* Anim = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/Characters/Mannequins/Anims/Unarmed/ABP_Unarmed.ABP_Unarmed"));
     if (!Character || !Anim) return 1;
+    if (Params.Contains(TEXT("CheckMap")))
+    {
+        if (!FEditorFileUtils::LoadMap(TEXT("/Game/ThirdPerson/Lvl_ThirdPerson"), false, true)) return 40;
+        UWorld* MapWorld = GEditor->GetEditorWorldContext().World();
+        int32 Actors = 0;
+        for (TActorIterator<AActor> It(MapWorld); It; ++It) ++Actors;
+        UE_LOG(LogTemp, Display, TEXT("HOMEWORK MAP PASS: %s, %d loaded actors, GameMode %s"), *MapWorld->GetName(), Actors, *GetNameSafe(MapWorld->GetWorldSettings()->DefaultGameMode));
+        return Actors > 10 ? 0 : 41;
+    }
     if (Params.Contains(TEXT("Verify")))
     {
         UWorld* World = UWorld::CreateWorld(EWorldType::Game, false);
