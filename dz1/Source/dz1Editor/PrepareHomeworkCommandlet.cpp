@@ -40,6 +40,12 @@
 #include "GameFramework/WorldSettings.h"
 #include "GameFramework/GameModeBase.h"
 #include "EngineUtils.h"
+#include "PrikolMedia.h"
+#include "PrikolOverlay.h"
+#include "Factories/TextureFactory.h"
+#include "Engine/Texture2D.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
 
 UPrepareHomeworkCommandlet::UPrepareHomeworkCommandlet()
 {
@@ -106,6 +112,57 @@ void Transition(UAnimStateNode* From, UAnimStateNode* To, FName Flag, bool Negat
 int32 UPrepareHomeworkCommandlet::Main(const FString& Params)
 {
     using namespace HomeworkAssets;
+    if (Params.Contains(TEXT("ImportPrikol")))
+    {
+        auto ImportTexture = [](const FString& File, const FString& Name) -> UTexture2D*
+        {
+            UPackage* Package = CreatePackage(*(TEXT("/Game/Prikol/") + Name));
+            UTextureFactory* Factory = NewObject<UTextureFactory>();
+            Factory->SuppressImportOverwriteDialog();
+            UTexture2D* Texture = Cast<UTexture2D>(UFactory::StaticImportObject(UTexture2D::StaticClass(), Package, *Name,
+                RF_Public | RF_Standalone, *File, nullptr, Factory));
+            if (Texture)
+            {
+                Texture->CompressionSettings = TC_EditorIcon;
+                Texture->LODGroup = TEXTUREGROUP_UI;
+                Texture->MipGenSettings = TMGS_NoMipmaps;
+                Texture->NeverStream = true;
+                Texture->SRGB = true;
+                Texture->PostEditChange();
+                if (!Save(Texture)) return nullptr;
+            }
+            return Texture;
+        };
+        const FString Project = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+        const FString FramesDir = FPaths::Combine(Project, TEXT("../tmp/prikol"));
+        TArray<FString> Durations;
+        if (!FFileHelper::LoadFileToStringArray(Durations, *FPaths::Combine(FramesDir, TEXT("durations.txt")))) return 50;
+        UPrikolMedia* Media = NewObject<UPrikolMedia>(CreatePackage(TEXT("/Game/Prikol/DA_Prikol")), TEXT("DA_Prikol"), RF_Public | RF_Standalone);
+        Media->FullscreenImage = ImportTexture(FPaths::Combine(Project, TEXT("prikoli/prikol.png")), TEXT("T_Prikol"));
+        if (!Media->FullscreenImage) return 51;
+        for (int32 Index = 0; Index < Durations.Num(); ++Index)
+        {
+            const FString Name = FString::Printf(TEXT("Frame_%03d"), Index);
+            UTexture2D* Frame = ImportTexture(FPaths::Combine(FramesDir, Name + TEXT(".png")), Name);
+            if (!Frame) return 52;
+            Media->Frames.Add(Frame);
+            Media->FrameDurations.Add(FCString::Atof(*Durations[Index]));
+        }
+        if (!Save(Media)) return 53;
+        UPrikolOverlay* Overlay = NewObject<UPrikolOverlay>();
+        Overlay->SetMedia(Media);
+        Overlay->Show(EPrikolMode::Animation);
+        Overlay->AdvanceAnimation(Media->FrameDurations[0] + 0.001f);
+        if (Overlay->GetFrame() != 1) return 54;
+        Overlay->Show(EPrikolMode::Fullscreen);
+        if (Overlay->GetMode() != EPrikolMode::Fullscreen || Overlay->GetFrame() != 0) return 55;
+        Overlay->AdvanceAnimation(1.f);
+        if (Overlay->GetFrame() != 0) return 56;
+        Overlay->Show(EPrikolMode::Hidden);
+        if (Overlay->GetVisibility() != ESlateVisibility::Collapsed) return 57;
+        UE_LOG(LogTemp, Display, TEXT("PRIKOL PASS: imported PNG and %d GIF frames; animation advances; fullscreen replaces GIF; hide collapses overlay."), Media->Frames.Num());
+        return 0;
+    }
     UBlueprint* Character = LoadObject<UBlueprint>(nullptr, TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter.BP_ThirdPersonCharacter"));
     UAnimBlueprint* Anim = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/Characters/Mannequins/Anims/Unarmed/ABP_Unarmed.ABP_Unarmed"));
     if (!Character || !Anim) return 1;

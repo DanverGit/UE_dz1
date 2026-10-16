@@ -17,6 +17,14 @@ UCLASS(abstract)
 class DZ1_API AHomeworkPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	UPROPERTY() TObjectPtr<class UPrikolOverlay> PrikolOverlay;
+	UPROPERTY() TObjectPtr<class UPrikolMedia> PrikolMedia;
+	UPROPERTY() TObjectPtr<UInputMappingContext> PrikolMapping;
+	UPROPERTY() TArray<TObjectPtr<class UInputAction>> PrikolActions;
+	void ShowPrikolImage();
+	void ShowPrikolAnimation();
+	void HidePrikol();
+	void EnsurePrikolOverlay();
 	
 protected:
 
