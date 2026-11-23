@@ -5,6 +5,6 @@ public class dz1Editor : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "dz1", "UMG" });
-        PrivateDependencyModuleNames.AddRange(new[] { "UnrealEd", "BlueprintGraph", "Kismet", "KismetCompiler", "AnimGraph", "AnimGraphRuntime", "EnhancedInput", "InputCore", "AssetRegistry" });
+        PrivateDependencyModuleNames.AddRange(new[] { "UnrealEd", "BlueprintGraph", "Kismet", "KismetCompiler", "AnimGraph", "AnimGraphRuntime", "EnhancedInput", "InputCore", "AssetRegistry", "PCG", "NavigationSystem", "AIModule", "BehaviorTreeEditor", "AIGraph" });
     }
 }

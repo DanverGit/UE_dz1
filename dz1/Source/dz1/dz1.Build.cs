@@ -9,7 +9,7 @@ public class dz1 : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicIncludePaths.Add(ModuleDirectory);
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "AIModule", "NavigationSystem", "GameplayTasks" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
